@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cutie Booth 🎀</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Floating ambient decorations -->
+<div class="ambient" id="ambient"></div>
+
+<!-- Top bar -->
+<header class="topbar">
+  <div class="brandmark">
+    <span class="brand-emoji">🎀</span>
+    <span class="brand-text">Cutie Booth</span>
+  </div>
+  <div class="topbar-actions">
+    <button class="icon-btn" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+    <button class="icon-btn" id="galleryNavBtn" title="Gallery" aria-label="Open gallery">🖼️</button>
+  </div>
+</header>
+
+<main id="app">
+
+  <!-- ============ SCREEN 1 : HOME / SETUP ============ -->
+  <section class="screen active" id="screen-home">
+    <div class="glass-card home-card">
+      <h1 class="hero-title">Let's take some <span class="accent-text">cute</span> photos! ✨</h1>
+      <p class="hero-sub">Pick your vibe, then step into the booth.</p>
+
+      <div class="setup-grid">
+
+        <div class="setup-group">
+          <h3>Photo layout</h3>
+          <div class="chip-row" id="layoutChips">
+            <button class="chip active" data-count="1">Single</button>
+            <button class="chip" data-count="2">Strip x2</button>
+            <button class="chip" data-count="4">Strip x4</button>
+            <button class="chip" data-count="6">Strip x6</button>
+          </div>
+        </div>
+
+        <div class="setup-group">
+          <h3>Countdown</h3>
+          <div class="chip-row" id="countdownChips">
+            <button class="chip" data-sec="3">3s</button>
+            <button class="chip active" data-sec="5">5s</button>
+            <button class="chip" data-sec="10">10s</button>
+          </div>
+        </div>
+
+        <div class="setup-group">
+          <h3>Filter</h3>
+          <select class="cute-select" id="filterSelect">
+            <option value="none">Original</option>
+            <option value="bw">B&amp;W</option>
+            <option value="vintage">Vintage</option>
+            <option value="sepia">Sepia</option>
+            <option value="warm">Warm</option>
+            <option value="cool">Cool</option>
+            <option value="dreamy">Dreamy</option>
+            <option value="softglow">Soft Glow</option>
+            <option value="bright">Bright</option>
+            <option value="contrast">Contrast</option>
+            <option value="saturate">Saturation</option>
+          </select>
+        </div>
+
+        <div class="setup-group toggles">
+          <label class="switch-row">
+            <span>Mirror mode</span>
+            <input type="checkbox" id="mirrorToggle" checked>
+            <span class="switch"></span>
+          </label>
+          <label class="switch-row">
+            <span>Show date/time on photo</span>
+            <input type="checkbox" id="dateToggle">
+            <span class="switch"></span>
+          </label>
+        </div>
+      </div>
+
+      <button class="cta-btn" id="startBoothBtn">Enter the Booth 💗</button>
+      <p class="tiny-note" id="cameraError"></p>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 2 : BOOTH (camera) ============ -->
+  <section class="screen" id="screen-booth">
+    <div class="booth-wrap">
+      <div class="camera-frame glass-card" id="cameraFrame">
+        <video id="video" autoplay playsinline></video>
+        <div class="flash-overlay" id="flashOverlay"></div>
+        <div class="countdown-overlay" id="countdownOverlay">
+          <span id="countdownNumber">3</span>
+        </div>
+        <div class="shot-progress" id="shotProgress"></div>
+        <div class="booth-mini-controls">
+          <button class="round-btn" id="switchCamBtn" title="Switch camera">🔄</button>
+          <button class="round-btn" id="fullscreenBtn" title="Fullscreen">⛶</button>
+          <button class="round-btn" id="mirrorBtnBooth" title="Toggle mirror">🪞</button>
+        </div>
+      </div>
+
+      <div class="booth-side glass-card">
+        <h3>Quick settings</h3>
+        <label class="field-label">Filter preview</label>
+        <select class="cute-select" id="filterSelectBooth"></select>
+
+        <label class="field-label">Countdown</label>
+        <div class="chip-row small" id="countdownChipsBooth"></div>
+
+        <div class="thumbs-preview" id="thumbsPreview"></div>
+
+        <button class="cta-btn small" id="captureBtn">Capture 📸</button>
+        <button class="ghost-btn" id="backHomeBtn">← Back</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 3 : EDITOR ============ -->
+  <section class="screen" id="screen-editor">
+    <div class="editor-wrap">
+
+      <div class="editor-canvas-area glass-card">
+        <div class="canvas-stage" id="canvasStage">
+          <canvas id="mainCanvas"></canvas>
+          <div class="sticker-layer" id="stickerLayer"></div>
+        </div>
+        <div class="editor-canvas-actions">
+          <button class="ghost-btn" id="retakeBtn">↺ Retake</button>
+          <button class="cta-btn small" id="saveToGalleryBtn">Save to Gallery 💾</button>
+        </div>
+      </div>
+
+      <div class="editor-panel glass-card">
+        <div class="tabs" id="editorTabs">
+          <button class="tab active" data-tab="frames">Frames</button>
+          <button class="tab" data-tab="filters">Filters</button>
+          <button class="tab" data-tab="stickers">Stickers</button>
+          <button class="tab" data-tab="text">Text</button>
+          <button class="tab" data-tab="colors">Colors</button>
+        </div>
+
+        <div class="tab-panel active" id="panel-frames">
+          <div class="swatch-grid" id="frameGrid"></div>
+        </div>
+
+        <div class="tab-panel" id="panel-filters">
+          <div class="swatch-grid" id="filterGrid"></div>
+        </div>
+
+        <div class="tab-panel" id="panel-stickers">
+          <div class="sticker-category" id="stickerCategories"></div>
+          <p class="tiny-note">Tap a sticker to add it, then drag / resize / rotate on the photo.</p>
+          <button class="ghost-btn" id="clearStickersBtn">Clear all stickers</button>
+        </div>
+
+        <div class="tab-panel" id="panel-text">
+          <label class="field-label">Text</label>
+          <input type="text" id="customTextInput" class="cute-input" placeholder="Type something cute...">
+          <button class="ghost-btn small" id="addTextBtn">+ Add text</button>
+
+          <label class="field-label">Font</label>
+          <select class="cute-select" id="fontSelect">
+            <option value="'Comic Sans MS', 'Comic Sans', cursive">Comic Rounded</option>
+            <option value="'Segoe Print', cursive">Handwritten</option>
+            <option value="'Brush Script MT', cursive">Brush Script</option>
+            <option value="'Bradley Hand', cursive">Bradley Hand</option>
+            <option value="'Century Gothic', sans-serif">Century Gothic</option>
+            <option value="Georgia, serif">Elegant Serif</option>
+          </select>
+
+          <label class="field-label">Size</label>
+          <input type="range" id="fontSizeRange" min="14" max="72" value="28">
+
+          <label class="field-label">Color</label>
+          <input type="color" id="fontColorInput" value="#7a5470">
+        </div>
+
+        <div class="tab-panel" id="panel-colors">
+          <label class="field-label">Background color</label>
+          <input type="color" id="bgColorInput" value="#fff6fa">
+          <label class="field-label">Border color</label>
+          <input type="color" id="borderColorInput" value="#ffb6d9">
+          <label class="field-label">Border thickness</label>
+          <input type="range" id="borderWidthRange" min="0" max="40" value="14">
+          <label class="field-label">Decorations</label>
+          <div class="chip-row" id="decoChips">
+            <button class="chip" data-deco="washi">+ Washi tape</button>
+            <button class="chip" data-deco="ribbon">+ Ribbon</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 4 : GALLERY ============ -->
+  <section class="screen" id="screen-gallery">
+    <div class="glass-card gallery-card">
+      <div class="gallery-header">
+        <h2>Your Gallery 🖼️</h2>
+        <div>
+          <button class="ghost-btn" id="downloadAllBtn">Download all (.zip)</button>
+          <button class="cta-btn small" id="newPhotoBtn">+ New Photo</button>
+        </div>
+      </div>
+      <div class="gallery-grid" id="galleryGrid">
+        <p class="empty-state" id="galleryEmpty">No photos yet — go take some cute shots! 📷</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Lightbox for gallery preview -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-inner">
+    <img id="lightboxImg" src="" alt="Preview">
+    <div class="lightbox-actions">
+      <button class="ghost-btn" id="lightboxDownload">Download</button>
+      <button class="ghost-btn danger" id="lightboxDelete">Delete</button>
+      <button class="ghost-btn" id="lightboxClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confetti / hearts canvas overlay -->
+<canvas id="fxCanvas"></canvas>
+
+<script src="script.js"></script>
+</body>
+</html>
